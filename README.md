@@ -66,6 +66,33 @@ Ranking when >4 candidates: Flux impact → Enterprise impact → Researcher nov
 **Phase 1 — Current**
 
 **Phase 2 — Planned**
+ This is a single static HTML file — a dark-themed dashboard with no build step, no framework, no backend. That makes
+hosting dead simple. Here are your options from cheapest to most capable:
+
+### Hosting Options
+
+| Option | Cost | Effort | Best For |
+|--------|------|--------|----------|
+| here.now (Tailscale Funnel) | Free | Minimal — tailscale funnel /path/to/html | Private/team access via Tailscale, zero
+config |
+| GitHub Pages | Free | Push to repo, enable Pages | Public static site, auto-deploy on push |
+| Cloudflare Pages | Free | Connect repo or wrangler pages deploy html/ | Public, global CDN, fast, custom domain |
+| S3 + CloudFront | ~$0.50-1/mo | TF it — S3 bucket + CF distribution + Route53 | AWS-native, custom domain, you already
+have the account |
+| AWS Amplify Hosting | Free tier (5 GB/mo) | Connect repo or manual deploy | AWS-native, auto-builds on push, custom
+domain, preview deploys |
+
+### My recommendation
+
+S3 + CloudFront if you want it in your AWS ecosystem — you already have account 332745420766 with Terraform, and it's a
+single HTML file so the cost is essentially zero. I can write the TF module in aws-master-tf.
+
+Cloudflare Pages if you want the fastest path with zero cost and don't care about AWS — npx wrangler pages deploy html/
+and you're live.
+
+Amplify is overkill for a single static HTML file with no build step, but makes sense if you plan to add a build
+pipeline (e.g., a script that regenerates the dashboard daily and pushes to the repo).
+
 
 
 ---
