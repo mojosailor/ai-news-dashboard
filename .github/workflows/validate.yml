@@ -2,7 +2,10 @@ name: Validate HTML
 
 on:
   pull_request:
-    paths: ['html/**']
+    paths:
+      - 'html/**'
+      - 'scripts/build_manifest.py'
+      - '.github/workflows/validate.yml'
 
 jobs:
   validate:
@@ -14,3 +17,14 @@ jobs:
         uses: nickersoft/html-validate-action@v1
         with:
           root: html/
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build archive manifest (dry run)
+        run: python scripts/build_manifest.py
+
+      - name: Ensure manifest is valid JSON
+        run: python -c "import json,sys; json.load(open('html/archive/manifest.json'))"

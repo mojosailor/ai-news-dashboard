@@ -63,13 +63,48 @@ Ranking when >4 candidates: Flux impact → Enterprise impact → Researcher nov
 
 ## Delivery Architecture
 
-**Phase 1 — Current**
+**Current state:** static HTML served from S3 behind CloudFront. Deployed by a GitHub Action on every push to `main` that touches `html/**` or the manifest builder.
 
-**Phase 2 — Planned**
+```
+html/
+├── index.html                   # today's dashboard (landing page)
+└── archive/
+    ├── index.html               # searchable prior-day browser
+    ├── manifest.json            # auto-generated search index (do not edit by hand)
+    ├── 2026-04-20.html          # snapshot per day, named YYYY-MM-DD.html
+    └── …
+```
+
+URLs after deploy:
+- `/`                           → today
+- `/archive/`                   → searchable archive (text + date-range)
+- `/archive/2026-04-20.html`    → a specific prior day
+- `/archive/?q=HEMS&from=2026-04-01` → shareable pre-filtered search
+
+### Daily update workflow (librarian)
+
+Every day, produce the new dashboard then snapshot it:
+
+1. Update the `REPORT` object inside `html/index.html` with today's content. Set `REPORT.date` to today in `YYYY-MM-DD` format.
+2. Copy the updated file into the archive with today's date:
+   ```bash
+   cp html/index.html "html/archive/$(date -u +%F).html"
+   ```
+3. (Optional, done automatically by CI) Regenerate the manifest:
+   ```bash
+   python scripts/build_manifest.py
+   ```
+4. Commit and push to `main`. The deploy workflow will:
+   - rebuild `html/archive/manifest.json`
+   - `aws s3 sync` the whole `html/` tree (including archive)
+   - invalidate CloudFront `/*`
+
+The archive page is a pure client-side app: it fetches `manifest.json` and does substring search across each day's title, summary, tags, sources, and keywords (first spotlight + all stories). No server, no index service.
+
+### Hosting Options (historical notes)
+
  This is a single static HTML file — a dark-themed dashboard with no build step, no framework, no backend. That makes
 hosting dead simple. Here are your options from cheapest to most capable:
-
-### Hosting Options
 
 | Option | Cost | Effort | Best For |
 |--------|------|--------|----------|

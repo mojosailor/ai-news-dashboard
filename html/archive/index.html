@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archive — Daily AI Intel — Prevwind</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222536;
+    --border: #2e3149;
+    --text: #e8eaf0;
+    --muted: #8b90a8;
+    --groove: #22c55e;
+    --groove-bg: rgba(34,197,94,0.10);
+    --groove-border: rgba(34,197,94,0.30);
+    --harmony: #818cf8;
+    --harmony-bg: rgba(129,140,248,0.10);
+    --harmony-border: rgba(129,140,248,0.30);
+    --both: #38bdf8;
+    --both-bg: rgba(56,189,248,0.10);
+    --both-border: rgba(56,189,248,0.30);
+    --enterprise: #fb923c;
+    --enterprise-bg: rgba(251,146,60,0.10);
+    --enterprise-border: rgba(251,146,60,0.30);
+    --bonus: #f472b6;
+    --bonus-bg: rgba(244,114,182,0.10);
+    --bonus-border: rgba(244,114,182,0.30);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 24px 16px 48px;
+    min-height: 100vh;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .brand h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+  .brand span {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .archive-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    transition: color .15s, border-color .15s, background .15s;
+  }
+  .archive-link:hover {
+    color: var(--text);
+    border-color: var(--both-border);
+    background: var(--both-bg);
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .controls {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  @media (min-width: 720px) {
+    .controls {
+      grid-template-columns: 2fr 1fr 1fr auto;
+      align-items: end;
+    }
+  }
+  .field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .field input, .field select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: var(--both-border);
+    background: var(--both-bg);
+  }
+  .clear-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    padding: 8px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    height: 36px;
+  }
+  .clear-btn:hover {
+    color: var(--text);
+    border-color: var(--bonus-border);
+    background: var(--bonus-bg);
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 2px 12px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .archive-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color .15s, background .15s, transform .15s;
+  }
+  .entry:hover {
+    border-color: var(--both-border);
+    background: var(--surface2);
+    transform: translateY(-1px);
+  }
+  .entry-date {
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  .entry-date strong {
+    display: block;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .entry-body .entry-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .entry-body .entry-preview {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .entry-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: 220px;
+  }
+  .tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .tag.groove   { color: var(--groove);     background: var(--groove-bg);     border-color: var(--groove-border); }
+  .tag.harmony  { color: var(--harmony);    background: var(--harmony-bg);    border-color: var(--harmony-border); }
+  .tag.both     { color: var(--both);       background: var(--both-bg);       border-color: var(--both-border); }
+  .tag.enterprise { color: var(--enterprise); background: var(--enterprise-bg); border-color: var(--enterprise-border); }
+  .tag.bonus    { color: var(--bonus);      background: var(--bonus-bg);      border-color: var(--bonus-border); }
+
+  .empty {
+    padding: 40px 16px;
+    text-align: center;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+  }
+
+  footer {
+    max-width: 1100px;
+    margin: 32px auto 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  mark {
+    background: var(--both-bg);
+    color: var(--both);
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .entry {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .entry-tags {
+      justify-content: flex-start;
+      max-width: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>Archive</h1>
+    <span>Daily AI Intel · Prevwind · Project Flux</span>
+  </div>
+  <a class="archive-link" href="../" title="Back to latest">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Latest
+  </a>
+</header>
+
+<main>
+  <div class="controls">
+    <div class="field">
+      <label for="q">Search</label>
+      <input id="q" type="search" placeholder="Title, summary, source, tag… e.g. HEMS, OpenADR, Ollama" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label for="from">From</label>
+      <input id="from" type="date" />
+    </div>
+    <div class="field">
+      <label for="to">To</label>
+      <input id="to" type="date" />
+    </div>
+    <button id="clear" class="clear-btn" type="button">Clear</button>
+  </div>
+
+  <div class="summary-row">
+    <span id="count">Loading…</span>
+    <span id="range"></span>
+  </div>
+
+  <div class="archive-list" id="list"></div>
+</main>
+
+<footer>
+  <span>Auto-generated · Prevwind internal</span>
+  <span id="build-stamp"></span>
+</footer>
+
+<script>
+/* ── Helpers ──────────────────────────────────────────────────────────── */
+const $ = (id) => document.getElementById(id);
+const q     = $("q");
+const from  = $("from");
+const to    = $("to");
+const list  = $("list");
+const count = $("count");
+const range = $("range");
+
+const TAG_CLASS = {
+  "groove": "groove",          "GrooveGrid": "groove",
+  "harmony": "harmony",        "HarmonyGrid": "harmony",
+  "both": "both",               "GrooveGrid + HarmonyGrid": "both",
+  "enterprise": "enterprise",  "Enterprise": "enterprise",
+  "bonus": "bonus",             "Bonus": "bonus",
+  "researcher": "harmony",     "Researcher": "harmony",
+  "creator": "bonus",           "Creator": "bonus",
+  "self-hosted": "both",        "Self-Hosted": "both",
+  "free": "enterprise",         "Free Tool": "enterprise",
+};
+
+const TAG_LABEL = {
+  "groove":      "GrooveGrid",
+  "harmony":     "HarmonyGrid",
+  "both":        "GrooveGrid + HarmonyGrid",
+  "enterprise":  "Enterprise",
+  "bonus":       "Bonus",
+  "researcher":  "Researcher",
+  "creator":     "Creator",
+  "self-hosted": "Self-Hosted",
+  "free":        "Free Tool",
+};
+
+function tagClass(t) {
+  if (!t) return "";
+  return TAG_CLASS[t] || TAG_CLASS[String(t).toLowerCase()] || "";
+}
+function tagLabel(t) {
+  if (!t) return "";
+  return TAG_LABEL[String(t).toLowerCase()] || t;
+}
+
+function fmtDate(iso) {
+  const d = new Date(iso + "T12:00:00");
+  return {
+    day: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    year: d.getFullYear(),
+    weekday: d.toLocaleDateString("en-US", { weekday: "short" }),
+  };
+}
+
+function escapeHTML(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+function highlight(text, needle) {
+  const safe = escapeHTML(text);
+  if (!needle) return safe;
+  const re = new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "ig");
+  return safe.replace(re, m => `<mark>${m}</mark>`);
+}
+
+/* ── State ────────────────────────────────────────────────────────────── */
+let MANIFEST = { entries: [], generated_at: null };
+
+/* ── Render ───────────────────────────────────────────────────────────── */
+function render() {
+  const needle = q.value.trim().toLowerCase();
+  const fromVal = from.value;
+  const toVal = to.value;
+
+  const filtered = MANIFEST.entries.filter(e => {
+    if (fromVal && e.date < fromVal) return false;
+    if (toVal && e.date > toVal) return false;
+    if (!needle) return true;
+
+    const hay = [
+      e.date,
+      e.title,
+      e.summary,
+      (e.tags || []).join(" "),
+      (e.sources || []).join(" "),
+      (e.keywords || []).join(" "),
+    ].join(" ").toLowerCase();
+    return hay.includes(needle);
+  });
+
+  count.textContent = filtered.length === 0
+    ? "No matching reports"
+    : `${filtered.length} report${filtered.length !== 1 ? "s" : ""}`;
+
+  if (MANIFEST.entries.length) {
+    const first = MANIFEST.entries[MANIFEST.entries.length - 1].date;
+    const last  = MANIFEST.entries[0].date;
+    range.textContent = `Range: ${first} → ${last}`;
+  }
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty">No prior-day reports match your filters.</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(e => {
+    const d = fmtDate(e.date);
+    const tags = (e.tags || []).map(t =>
+      `<span class="tag ${tagClass(t)}">${escapeHTML(tagLabel(t))}</span>`
+    ).join("");
+
+    return `
+      <a class="entry" href="${encodeURIComponent(e.date)}.html">
+        <div class="entry-date">
+          <strong>${d.day}</strong>
+          ${d.weekday} · ${d.year}
+        </div>
+        <div class="entry-body">
+          <div class="entry-title">${highlight(e.title || "Daily AI Intel", needle)}</div>
+          <div class="entry-preview">${highlight(e.summary || "", needle)}</div>
+        </div>
+        <div class="entry-tags">${tags}</div>
+      </a>`;
+  }).join("");
+}
+
+/* ── Wire up ──────────────────────────────────────────────────────────── */
+[q, from, to].forEach(el => el.addEventListener("input", render));
+$("clear").addEventListener("click", () => {
+  q.value = ""; from.value = ""; to.value = "";
+  render();
+});
+
+// Keep search state in URL for shareable links
+function syncURL() {
+  const params = new URLSearchParams();
+  if (q.value) params.set("q", q.value);
+  if (from.value) params.set("from", from.value);
+  if (to.value) params.set("to", to.value);
+  const qs = params.toString();
+  history.replaceState(null, "", qs ? `?${qs}` : location.pathname);
+}
+[q, from, to].forEach(el => el.addEventListener("change", syncURL));
+q.addEventListener("input", syncURL);
+
+function loadFromURL() {
+  const params = new URLSearchParams(location.search);
+  if (params.has("q"))    q.value = params.get("q");
+  if (params.has("from")) from.value = params.get("from");
+  if (params.has("to"))   to.value = params.get("to");
+}
+
+/* ── Load ─────────────────────────────────────────────────────────────── */
+fetch("manifest.json", { cache: "no-cache" })
+  .then(r => r.ok ? r.json() : Promise.reject(r.status))
+  .then(data => {
+    MANIFEST = data;
+    // Newest first
+    MANIFEST.entries.sort((a, b) => b.date.localeCompare(a.date));
+    if (MANIFEST.generated_at) {
+      $("build-stamp").textContent = `Index built ${MANIFEST.generated_at}`;
+    }
+    loadFromURL();
+    render();
+  })
+  .catch(err => {
+    list.innerHTML = `<div class="empty">Archive index not yet generated. (${escapeHTML(String(err))})</div>`;
+    count.textContent = "";
+  });
+</script>
+</body>
+</html>

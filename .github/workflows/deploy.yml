@@ -3,7 +3,10 @@ name: Deploy Dashboard
 on:
   push:
     branches: [main]
-    paths: ['html/**']
+    paths:
+      - 'html/**'
+      - 'scripts/build_manifest.py'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
@@ -21,6 +24,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build archive manifest
+        run: python scripts/build_manifest.py
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
