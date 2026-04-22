@@ -129,7 +129,7 @@ def _collect_keywords(report: dict) -> list[str]:
     """Token set useful for substring search across a report."""
     bits: list[str] = []
     for s in report.get("spotlights") or []:
-        for k in ("title", "summary", "relevance", "sourceLabel", "tag"):
+        for k in ("title", "headline", "summary", "relevance", "sourceLabel", "tag"):
             v = s.get(k)
             if v:
                 bits.append(str(v))
@@ -145,9 +145,9 @@ def summarize_entry(date: str, report: dict) -> dict:
     spotlights = report.get("spotlights") or []
     stories = report.get("stories") or []
 
-    # Lead title/summary = first spotlight, else first story
+    # Lead title/summary = first spotlight (uses 'headline'), else first story (uses 'title')
     lead = (spotlights[0] if spotlights else (stories[0] if stories else {})) or {}
-    title = lead.get("title") or f"Daily AI Intel — {date}"
+    title = lead.get("headline") or lead.get("title") or f"Daily AI Intel — {date}"
     summary = lead.get("summary") or ""
 
     # Unique tags across the report
