@@ -1,6 +1,8 @@
-# Hand-off: CloudFront index-document rewrite for `ai-news-dashboard`
+# Hand-off 001: CloudFront index-document rewrite for `ai-news-dashboard`
 
-**To:** Kiro / Seinfeld
+**Status:** ✅ **Completed 2026-04-21** — deployed and verified live on both `news.harmonygrid.ai` and `news.groovegrid.ai`. Kept on file for history and as a template for future infra hand-offs.
+
+**Originally for:** Kiro / Seinfeld (any infra engineer / agent with `aws-master-tf` access)
 **From:** Ron (via Computer)
 **Date:** 2026-04-21
 **Repo impacted:** `aws-master-tf` (Terraform module that provisions the `ai-news-dashboard` distribution)
@@ -161,14 +163,14 @@ The function itself can live unused; it only executes when associated.
 
 ---
 
-## Task checklist for Kiro
+## Task checklist
 
-- [ ] Locate `aws_cloudfront_distribution` resource for `ai-news-dashboard` in `aws-master-tf`
-- [ ] Add `default_root_object = "index.html"` to that resource
-- [ ] Add `aws_cloudfront_function.index_rewrite` resource (code above)
-- [ ] Add `function_association` (viewer-request) to the default cache behavior
-- [ ] `terraform plan` — confirm only the distribution is modified and one function is created
-- [ ] `terraform apply`
-- [ ] Wait for distribution status = `Deployed` (check `aws cloudfront get-distribution --id <id>` or the console)
-- [ ] Run the acceptance `curl` commands above
-- [ ] Post results in the PR / ticket and close
+- [x] Locate `aws_cloudfront_distribution` resource for `ai-news-dashboard` in `aws-master-tf`
+- [x] Add `default_root_object = "index.html"` to that resource
+- [x] Add `aws_cloudfront_function.index_rewrite` resource (code above)
+- [x] Add `function_association` (viewer-request) to the default cache behavior
+- [x] `terraform plan` — confirm only the distribution is modified and one function is created
+- [x] `terraform apply`
+- [x] Wait for distribution status = `Deployed`
+- [x] Run the acceptance `curl` commands above — all four domain/path combinations returning 200
+- [x] Regression check: `/daily-intel-dashboard.html` still 403 (intentional, file genuinely gone)

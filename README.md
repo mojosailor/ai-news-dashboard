@@ -61,6 +61,10 @@ Ranking when >4 candidates: Flux impact → Enterprise impact → Researcher nov
 - nv files — no environment variables defined
 - te/Next.js/Nuxt configs — no frontend bundlers
 
+## Hand-offs / Infra Notes
+
+Operational hand-offs (things that need to land in another repo, like `aws-master-tf`) live in [`docs/`](docs/README.md). Start there when an infra or cross-repo change is needed. The index lists each hand-off, its status, and the target repo so you don't have to grep for your name.
+
 ## Delivery Architecture
 
 **Current state:** static HTML served from S3 behind CloudFront. Deployed by a GitHub Action on every push to `main` that touches `html/**` or the manifest builder.
