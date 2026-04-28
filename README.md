@@ -90,6 +90,37 @@ URLs after deploy:
 Every day, produce the new dashboard then snapshot it:
 
 1. Update the `REPORT` object inside `html/index.html` with today's content. Set `REPORT.date` to today in `YYYY-MM-DD` format.
+
+   **REQUIRED — atomic REPORT swap pattern.** Multiline diffs and large find/replace operations on the REPORT block have failed in production (the edit replaces the entire object with a partial fragment, leaving the file invalid). Daily automation runs MUST mutate the REPORT block using the exact Python pattern below — no exceptions:
+
+   ```python
+   import re
+
+   with open('html/index.html', 'r', encoding='utf-8') as f:
+       html = f.read()
+
+   # Match the REPORT object literal from `const REPORT = {` through the closing `};` line.
+   pattern = re.compile(r'const REPORT = \{.*?\n\};\n', re.DOTALL)
+   matches = pattern.findall(html)
+
+   # Hard guards — fail the run, do NOT fall back to a textual diff.
+   assert len(matches) == 1, f'expected 1 REPORT block, found {len(matches)}'
+   assert 'TAG_META' not in matches[0], 'pattern over-matched into TAG_META'
+
+   # Use str.replace, NOT re.sub — re.sub interprets backslash escapes (e.g. \u) in the replacement
+   # string and corrupts unicode in the new REPORT text.
+   new_html = html.replace(matches[0], new_report_text, 1)
+
+   with open('html/index.html', 'w', encoding='utf-8') as f:
+       f.write(new_html)
+   ```
+
+   Post-write structural validation MUST also pass before commit:
+   - `npx --yes html-validate@8 'html/**/*.html'` exits 0
+   - The new REPORT block parses as a JS object literal containing `date`, `spotlights`, and `stories` keys
+
+   If any guard fails, abort the run and send a notification — do not push a partially-edited file.
+
 2. Copy the updated file into the archive with today's date:
    ```bash
    cp html/index.html "html/archive/$(date -u +%F).html"
