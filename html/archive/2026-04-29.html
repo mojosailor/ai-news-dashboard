@@ -100,6 +100,17 @@
     border-color: var(--both-border);
     background: var(--both-bg);
   }
+  .archive-banner {
+    max-width: 1100px;
+    margin: -8px auto 20px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--bonus);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 12px;
+  }
   #report-date {
     font-size: 13px;
     color: var(--muted);
@@ -294,7 +305,7 @@
 <header>
   <div class="brand">
     <h1>Daily AI Intel</h1>
-    <span>Prevwind · Project Flux</span>
+    <span>Prevwind · Project Flux · Archived</span>
   </div>
   <div class="header-right">
     <a class="archive-link" href="archive/" title="Browse prior days">
@@ -304,6 +315,10 @@
     <div id="report-date">2026-04-29</div>
   </div>
 </header>
+
+<div class="archive-banner">
+  Viewing archived report. <a href="../" style="color:var(--both)">Go to today's dashboard</a> or <a href="index.html" style="color:var(--both)">browse all archives</a>.
+</div>
 
 <!-- ── Spotlight section ──────────────────────── -->
 <div class="section-label" style="max-width:1100px;margin:0 auto 12px;">Spotlights</div>
