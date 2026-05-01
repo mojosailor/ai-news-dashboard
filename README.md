@@ -87,7 +87,9 @@ URLs after deploy:
 
 ### Daily update workflow (librarian)
 
-Every day, produce the new dashboard then snapshot it:
+Every day, produce the new dashboard then snapshot it.
+
+**Research window (signal over recency).** Default to the past 7 days, prefer items from the past 48h when available, and optimize for signal over recency — a high-signal item from earlier in the week is better than a thin last-24h filler. This rule applies on every run; do not escalate just because the last 24h is thin. Cover all five buckets from the daily run instructions: (a) HEMS / VPP / OpenADR / DERMS / demand response, (b) enterprise AI platforms / agent governance / identity, (c) open-weight LLMs / Ollama / self-hosted, (d) AI property management / real estate, (e) creator / AI music / AI video. Aim for 2 primary spotlights + 2 bonus + 5–7 stories with the README tag vocabulary (`groove | harmony | both | enterprise | bonus`; bonus items must include `bonus: true`).
 
 1. Update the `REPORT` object inside `html/index.html` with today's content. Set `REPORT.date` to today in `YYYY-MM-DD` format.
 
@@ -129,10 +131,12 @@ Every day, produce the new dashboard then snapshot it:
    ```bash
    python scripts/build_manifest.py
    ```
-4. Commit and push to `main`. The deploy workflow will:
+4. Commit and push directly to `main` (no draft PR). The deploy workflow will:
    - rebuild `html/archive/manifest.json`
    - `aws s3 sync` the whole `html/` tree (including archive)
    - invalidate CloudFront `/*`
+
+   The daily automation pushes straight to `main` so the new edition deploys live each morning without waiting on PR review. If any guard fails (atomic-swap assertions, `html-validate` non-zero exit, missing required REPORT keys), abort the run and send a notification — do not push a broken file.
 
 The archive page is a pure client-side app: it fetches `manifest.json` and does substring search across each day's title, summary, tags, sources, and keywords (first spotlight + all stories). No server, no index service.
 
