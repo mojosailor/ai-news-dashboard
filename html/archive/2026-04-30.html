@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily AI Intel — Prevwind</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222536;
+    --border: #2e3149;
+    --text: #e8eaf0;
+    --muted: #8b90a8;
+    --groove: #22c55e;
+    --groove-bg: rgba(34,197,94,0.10);
+    --groove-border: rgba(34,197,94,0.30);
+    --harmony: #818cf8;
+    --harmony-bg: rgba(129,140,248,0.10);
+    --harmony-border: rgba(129,140,248,0.30);
+    --both: #38bdf8;
+    --both-bg: rgba(56,189,248,0.10);
+    --both-border: rgba(56,189,248,0.30);
+    --enterprise: #fb923c;
+    --enterprise-bg: rgba(251,146,60,0.10);
+    --enterprise-border: rgba(251,146,60,0.30);
+    --bonus: #f472b6;
+    --bonus-bg: rgba(244,114,182,0.10);
+    --bonus-border: rgba(244,114,182,0.30);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 24px 16px 48px;
+    min-height: 100vh;
+  }
+
+  /* ── Header ─────────────────────────────── */
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .brand h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .brand span {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .archive-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    transition: color .15s, border-color .15s, background .15s;
+  }
+  .archive-link:hover {
+    color: var(--text);
+    border-color: var(--both-border);
+    background: var(--both-bg);
+  }
+  #report-date {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ── Section labels ─────────────────────── */
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* ── Spotlights grid ────────────────────── */
+  .spotlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto 32px;
+  }
+
+  /* ── Card ───────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.15s;
+  }
+
+  .card:hover { border-color: #3e4265; }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .pill {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  /* pill variants */
+  .pill-groove    { background: var(--groove-bg);     color: var(--groove);     border: 1px solid var(--groove-border); }
+  .pill-harmony   { background: var(--harmony-bg);    color: var(--harmony);    border: 1px solid var(--harmony-border); }
+  .pill-both      { background: var(--both-bg);       color: var(--both);       border: 1px solid var(--both-border); }
+  .pill-enterprise{ background: var(--enterprise-bg); color: var(--enterprise); border: 1px solid var(--enterprise-border); }
+  .pill-bonus     { background: var(--bonus-bg);      color: var(--bonus);      border: 1px solid var(--bonus-border); }
+
+  /* spotlight card accent stripe */
+  .card.spotlight-flux      { border-top: 3px solid var(--groove); }
+  .card.spotlight-harmony   { border-top: 3px solid var(--harmony); }
+  .card.spotlight-both      { border-top: 3px solid var(--both); }
+  .card.spotlight-enterprise{ border-top: 3px solid var(--enterprise); }
+  .card.spotlight-bonus     { border-top: 3px solid var(--bonus); }
+
+  .card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text);
+  }
+
+  .card p {
+    font-size: 13px;
+    color: #b0b4cc;
+    line-height: 1.65;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+    gap: 8px;
+  }
+
+  .relevance {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .source-link {
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.15s;
+    white-space: nowrap;
+  }
+
+  .source-link:hover { color: var(--text); }
+  .source-link svg { flex-shrink: 0; }
+
+  /* ── More stories ───────────────────────── */
+  .more-section {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .story-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .story-item {
+    background: var(--surface);
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: 12px;
+    transition: background 0.12s;
+  }
+
+  .story-item:hover { background: var(--surface2); }
+
+  .story-pill { margin-top: 2px; }
+
+  .story-body { min-width: 0; }
+
+  .story-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+    line-height: 1.4;
+  }
+
+  .story-summary {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .story-source {
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    white-space: nowrap;
+    margin-top: 3px;
+    transition: color 0.15s;
+  }
+
+  .story-source:hover { color: var(--text); }
+
+  /* ── Empty / error states ───────────────── */
+  .empty {
+    text-align: center;
+    padding: 48px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* ── Footer ─────────────────────────────── */
+  footer {
+    max-width: 1100px;
+    margin: 40px auto 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>Daily AI Intel</h1>
+    <span>Prevwind · Project Flux</span>
+  </div>
+  <div class="header-right">
+    <a class="archive-link" href="archive/" title="Browse prior days">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><path d="M10 12h4"/></svg>
+      Archive
+    </a>
+    <div id="report-date">Thu, Apr 30, 2026</div>
+  </div>
+</header>
+  <div class="archive-banner">
+    Viewing an archived edition. <a href="../">Go to Latest</a> or <a href="index.html">browse Archive</a>.
+  </div>
+
+
+<!-- ── Spotlight section ──────────────────────── -->
+<div class="section-label" style="max-width:1100px;margin:0 auto 12px;">Spotlights</div>
+<div class="spotlights" id="spotlight-grid"></div>
+
+<!-- ── More stories ──────────────────────────── -->
+<div class="more-section">
+  <div class="section-label">More Stories</div>
+  <div class="story-list" id="story-list"></div>
+</div>
+
+<footer>
+  <span>Auto-generated · Prevwind internal</span>
+  <span id="footer-count"></span>
+</footer>
+
+<!-- ═══════════════════════════════════════════════
+     DATA — edit this object to update the report
+     ════════════════════════════════════════════ -->
+<script>
+/*
+  TAG values:
+    "groove"      → [GrooveGrid]
+    "harmony"     → [HarmonyGrid]
+    "both"        → [GrooveGrid + HarmonyGrid]
+    "enterprise"  → General Enterprise
+    "bonus"       → Bonus (rare 3rd spotlight, big-news days only)
+
+  Set bonus:true on a spotlight to show it as the optional 3rd card.
+  If bonus:true but you only want 2, simply remove the entry.
+*/
+const REPORT = {"date": "2026-04-30", "dateline": "Thu, Apr 30, 2026", "spotlights": [{"title": "Google Cloud launches Gemini Enterprise Agent Platform", "tag": "enterprise", "bullets": ["New ‘Gemini Enterprise Agent Platform’ positions as the new home for Vertex AI agent development.", "Governance primitives include Agent Identity (cryptographic IDs), Agent Registry, and Agent Gateway.", "Also adds security monitoring like anomaly/threat detection and an agent security dashboard."], "sourceLabel": "Google Cloud Blog", "sourceUrl": "https://cloud.google.com/blog/products/ai-machine-learning/introducing-gemini-enterprise-agent-platform"}, {"title": "Microsoft open-sources Agent Governance Toolkit (runtime policy + identity)", "tag": "enterprise", "bullets": ["MIT-licensed toolkit for runtime governance of autonomous agents across common frameworks.", "Includes a policy engine (YAML/OPA Rego/Cedar) and DID-based agent identity (Ed25519).", "Packaged as a monorepo with components for compliance evidence, SRE patterns, and plugin signing."], "sourceLabel": "Microsoft Open Source Blog", "sourceUrl": "https://opensource.microsoft.com/blog/2026/04/02/introducing-the-agent-governance-toolkit-open-source-runtime-security-for-ai-agents/"}, {"title": "Self-hosting gets easier: OpenAI’s gpt-oss models land in Ollama", "tag": "harmony", "bullets": ["Ollama lists OpenAI ‘gpt-oss’ open-weight models (20B and 120B) under Apache 2.0.", "Claims MXFP4 quantization support and the ability to run the smaller model on ~16GB RAM.", "Good fit for local reasoning + agentic workflows where data can’t leave the box."], "sourceLabel": "Ollama Library", "sourceUrl": "https://ollama.com/library/gpt-oss", "bonus": true}, {"title": "Adobe expands Firefly’s browser video editor + adds Kling 3.0 models", "tag": "bonus", "bullets": ["Firefly Video Editor adds audio cleanup (Enhance Speech) and tighter Adobe Stock integration.", "Adobe says Kling 3.0 and Kling 3.0 Omni are now available as Firefly video models.", "Premiere gets a new Color Mode (beta); After Effects adds an AI Object Matte workflow."], "sourceLabel": "Adobe Blog", "sourceUrl": "https://blog.adobe.com/en/publish/2026/04/15/adobe-extends-leadership-video-unleashing-new-ai-powered-creation-firefly-reinventing-color-editors-in-premiere", "bonus": true}], "stories": [{"title": "Grid edge: AI data centers are forcing utilities to rethink load planning", "tag": "both", "summary": "Utility Dive reports data-center demand volatility is breaking legacy planning assumptions and pushing utilities toward more dynamic forecasting and flexibility programs.", "sourceLabel": "Utility Dive", "sourceUrl": "https://www.utilitydive.com/news/ai-data-centers-utility-load-planning/816806/"}, {"title": "Real estate ops: Entrata debuts an ‘agentic’ property management system with 100+ AI agents", "tag": "groove", "summary": "Entrata says its OXP platform now embeds 100+ AI agents across leasing, maintenance, accounting, and resident workflows, plus an orchestration workspace (OXP Studio).", "sourceLabel": "GlobeNewswire", "sourceUrl": "https://www.globenewswire.com/news-release/2026/03/24/3261761/0/en/entrata-introduces-the-multifamily-industry-s-first-agentic-property-management-system-with-100-embedded-ai-agents.html"}, {"title": "Property managers: DoorLoop launches AI Inspections to turn photos into reports + work orders", "tag": "groove", "summary": "DoorLoop says its AI Inspections feature can generate structured inspection reports from guided photo capture and automatically create follow-up work orders.", "sourceLabel": "DoorLoop Blog", "sourceUrl": "https://www.doorloop.com/blog/doorloop-launches-ai-inspections"}, {"title": "Creators: Google Vids adds free Veo 3.1 video generations for anyone with a Google account", "tag": "bonus", "summary": "Google says Vids now offers 10 free Veo 3.1 generations monthly, with higher limits for AI Ultra/Workspace tiers and music via Lyria for paid plans.", "sourceLabel": "Google Blog", "sourceUrl": "https://blog.google/products-and-platforms/products/workspace/google-vids-updates-lyria-veo/"}, {"title": "Open models: Google releases Gemma 4 under Apache 2.0", "tag": "harmony", "summary": "Google’s open-source team says Gemma 4 is the first Gemma family released under Apache 2.0, aiming to broaden commercial and research use.", "sourceLabel": "Google Open Source Blog", "sourceUrl": "https://opensource.googleblog.com/2026/03/gemma-4-expanding-the-gemmaverse-with-apache-20.html"}, {"title": "Identity for agents: why IAM becomes the control plane for autonomous workflows", "tag": "enterprise", "summary": "Strata argues agentic AI needs runtime identity governance (ephemeral credentials, observability, and delegation controls) rather than periodic access reviews.", "sourceLabel": "Strata Identity", "sourceUrl": "https://www.strata.io/blog/agentic-identity/agentic-ai-governance-how-to-approach-it/"}]}
+;
+// ────────────────────────────────────────────────────────────────────────────
+
+/* ── Render helpers ─────────────────────────────────────────────────────── */
+const TAG_META = {
+  groove:     { label: "GrooveGrid",              pillClass: "pill-groove",     cardClass: "spotlight-flux" },
+  harmony:    { label: "HarmonyGrid",             pillClass: "pill-harmony",    cardClass: "spotlight-harmony" },
+  both:       { label: "GrooveGrid + HarmonyGrid",pillClass: "pill-both",       cardClass: "spotlight-both" },
+  enterprise: { label: "Enterprise",              pillClass: "pill-enterprise", cardClass: "spotlight-enterprise" },
+  bonus:      { label: "Bonus",                   pillClass: "pill-bonus",      cardClass: "spotlight-bonus" },
+};
+
+function pill(tag) {
+  const m = TAG_META[tag] || TAG_META.enterprise;
+  return `<span class="pill ${m.pillClass}">${m.label}</span>`;
+}
+
+function externalIcon() {
+  return `<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7"/><polyline points="8 1 11 1 11 4"/><line x1="5" y1="7" x2="11" y2="1"/></svg>`;
+}
+
+/* ── Date ──────────────────────────────────────────────────────────────── */
+const d = new Date(REPORT.date + "T12:00:00");
+const fmt = d.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+document.getElementById("report-date").textContent = fmt;
+
+/* ── Spotlights ────────────────────────────────────────────────────────── */
+const grid = document.getElementById("spotlight-grid");
+const visibleSpotlights = REPORT.spotlights.filter((s, i) => {
+  if (s.bonus) return true;   // bonus cards always show if present
+  return i < 2;               // cap at 2 non-bonus spotlights
+});
+
+if (visibleSpotlights.length === 0) {
+  grid.innerHTML = `<div class="empty">No spotlights for today.</div>`;
+} else {
+  visibleSpotlights.forEach(s => {
+    const m = TAG_META[s.tag] || TAG_META.enterprise;
+    grid.innerHTML += `
+      <div class="card ${m.cardClass}">
+        <div class="card-header">
+          <h2>${s.headline}</h2>
+          ${pill(s.tag)}
+        </div>
+        <p>${s.summary}</p>
+        <div class="card-footer">
+          <span class="relevance">${s.relevance || ""}</span>
+          <a class="source-link" href="${s.sourceUrl}" target="_blank" rel="noopener">
+            ${externalIcon()} ${s.sourceLabel}
+          </a>
+        </div>
+      </div>`;
+  });
+}
+
+/* ── Stories ───────────────────────────────────────────────────────────── */
+const list = document.getElementById("story-list");
+if (!REPORT.stories || REPORT.stories.length === 0) {
+  list.innerHTML = `<div class="empty">No additional stories today.</div>`;
+} else {
+  REPORT.stories.forEach(s => {
+    list.innerHTML += `
+      <div class="story-item">
+        <div class="story-pill">${pill(s.tag)}</div>
+        <div class="story-body">
+          <div class="story-title">${s.title}</div>
+          <div class="story-summary">${s.summary}</div>
+        </div>
+        <a class="story-source" href="${s.sourceUrl}" target="_blank" rel="noopener">
+          ${externalIcon()} ${s.sourceLabel}
+        </a>
+      </div>`;
+  });
+}
+
+/* ── Footer count ──────────────────────────────────────────────────────── */
+const total = visibleSpotlights.length + (REPORT.stories?.length || 0);
+document.getElementById("footer-count").textContent =
+  `${visibleSpotlights.length} spotlight${visibleSpotlights.length !== 1 ? "s" : ""} · ${REPORT.stories?.length || 0} stories`;
+</script>
+</body>
+</html>
