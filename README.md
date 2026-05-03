@@ -67,7 +67,35 @@ Operational hand-offs (things that need to land in another repo, like `aws-maste
 
 ## Delivery Architecture
 
-**Current state:** static HTML served from S3 behind CloudFront. Deployed by a GitHub Action on every push to `main` that touches `html/**` or the manifest builder.
+**Current state:** static HTML served from S3 behind CloudFront. Deployed by a GitHub Action on every push to `main` that touches `html/**` or `scripts/**`.
+
+### Render contract & validation pipeline (added 2026-05-03)
+
+Every `html/**.html` report page must contain a `const REPORT = {…};` literal that satisfies the schema below. The renderer in each page reads this object on load. **Schema drift between data and template was the root cause of the 2026-04-29 → 2026-05-02 blank-page incident** — the validators below exist so it cannot recur.
+
+**REPORT schema (enforced by `scripts/validate_report.py`):**
+
+- `date`: `YYYY-MM-DD` string, required.
+- `spotlights`: non-empty array. Each entry must have:
+  - `title` (string; legacy `headline` accepted for archive files only)
+  - `tag`: one of `groove | harmony | both | enterprise | bonus`
+  - `bullets`: non-empty array of strings (legacy `summary` string accepted as fallback)
+  - `sourceUrl`: `http(s)://…`
+  - `sourceLabel`: non-empty string
+  - Optional: `bonus: true` for the bonus card slot, `keywords[]`, `relevance` string
+- `stories`: array (may be empty). Each entry: `title`, `tag`, `sourceUrl`, `sourceLabel`.
+
+**Three independent guards run before any deploy reaches production:**
+
+1. **Markup validation** — `npx html-validate@8 html/**/*.html`.
+2. **Schema validation** — `python scripts/validate_report.py` parses the embedded `REPORT` object out of every page and checks the contract above.
+3. **Headless render check** — `node scripts/render_check.cjs <urls>` loads each page in real Chromium, fails on any uncaught JS error or `console.error`, and asserts `#spotlight-grid` has at least one `.card` and `#story-list` has at least one `.story-item` (or an explicit empty-state message).
+
+All three run in `.github/workflows/validate.yml` on PRs and pushes to `main`, and again in `.github/workflows/deploy.yml` *before* `aws s3 sync` touches the bucket. The deploy job also waits for the CloudFront invalidation to complete and then re-runs the headless render check against `https://news.harmonygrid.ai` and `https://news.groovegrid.ai`. If that post-deploy smoke test fails, the previous `index.html` is restored from a snapshot taken just before the sync and CloudFront is invalidated again — production is never left in a blank state.
+
+See `scripts/patch_render_template.py` for the one-shot patcher that brought every legacy archive onto the current renderer.
+
+### Storage & layout
 
 ```
 html/
