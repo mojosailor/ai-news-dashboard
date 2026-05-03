@@ -4,9 +4,17 @@ on:
   pull_request:
     paths:
       - 'html/**'
-      - 'scripts/build_manifest.py'
+      - 'scripts/**'
       - '.github/workflows/validate.yml'
       - '.htmlvalidate.json'
+  push:
+    branches: [main]
+    paths:
+      - 'html/**'
+      - 'scripts/**'
+      - '.github/workflows/validate.yml'
+      - '.htmlvalidate.json'
+  workflow_dispatch:
 
 jobs:
   validate:
@@ -19,16 +27,48 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Validate HTML
-        run: npx --yes html-validate@8 "html/**/*.html"
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: HTML markup validation
+        run: npx --yes html-validate@8 "html/**/*.html"
+
+      - name: REPORT schema validation
+        run: python scripts/validate_report.py
 
       - name: Build archive manifest (dry run)
         run: python scripts/build_manifest.py
 
       - name: Ensure manifest is valid JSON
         run: python -c "import json,sys; json.load(open('html/archive/manifest.json'))"
+
+      - name: Install Playwright
+        run: |
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund playwright@1.48
+          npx playwright install --with-deps chromium
+
+      - name: Serve html/ on a local port
+        run: |
+          cd html
+          python -m http.server 8765 --bind 127.0.0.1 > /tmp/http.log 2>&1 &
+          # Wait for the server to come up
+          for i in $(seq 1 20); do
+            if curl -sf http://127.0.0.1:8765/index.html > /dev/null; then
+              echo "ready after ${i} attempts"; exit 0
+            fi
+            sleep 0.5
+          done
+          echo "server failed to start"; cat /tmp/http.log; exit 1
+
+      - name: Headless render check (today + every archive day)
+        run: |
+          set -e
+          urls=("http://127.0.0.1:8765/index.html")
+          for f in html/archive/2026-*.html; do
+            name=$(basename "$f")
+            urls+=("http://127.0.0.1:8765/archive/${name}")
+          done
+          node scripts/render_check.cjs "${urls[@]}"

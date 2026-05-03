@@ -287,6 +287,22 @@
     flex-wrap: wrap;
     gap: 8px;
   }
+
+  /* render-fix v1 bullets css */
+  .card .bullets {
+    list-style: disc;
+    padding-left: 18px;
+    margin: 0;
+    color: #b0b4cc;
+    font-size: 13px;
+    line-height: 1.65;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card .bullets li {
+    margin-left: 0;
+  }
 </style>
 </head>
 <body>
@@ -328,33 +344,30 @@
      DATA — edit this object to update the report
      ════════════════════════════════════════════ -->
 <script>
-/*
-  TAG values:
-    "groove"      → [GrooveGrid]
-    "harmony"     → [HarmonyGrid]
-    "both"        → [GrooveGrid + HarmonyGrid]
-    "enterprise"  → General Enterprise
-    "bonus"       → Bonus (rare 3rd spotlight, big-news days only)
-
-  Set bonus:true on a spotlight to show it as the optional 3rd card.
-  If bonus:true but you only want 2, simply remove the entry.
-*/
 const REPORT = {"date": "2026-04-30", "dateline": "Thu, Apr 30, 2026", "spotlights": [{"title": "Google Cloud launches Gemini Enterprise Agent Platform", "tag": "enterprise", "bullets": ["New ‘Gemini Enterprise Agent Platform’ positions as the new home for Vertex AI agent development.", "Governance primitives include Agent Identity (cryptographic IDs), Agent Registry, and Agent Gateway.", "Also adds security monitoring like anomaly/threat detection and an agent security dashboard."], "sourceLabel": "Google Cloud Blog", "sourceUrl": "https://cloud.google.com/blog/products/ai-machine-learning/introducing-gemini-enterprise-agent-platform"}, {"title": "Microsoft open-sources Agent Governance Toolkit (runtime policy + identity)", "tag": "enterprise", "bullets": ["MIT-licensed toolkit for runtime governance of autonomous agents across common frameworks.", "Includes a policy engine (YAML/OPA Rego/Cedar) and DID-based agent identity (Ed25519).", "Packaged as a monorepo with components for compliance evidence, SRE patterns, and plugin signing."], "sourceLabel": "Microsoft Open Source Blog", "sourceUrl": "https://opensource.microsoft.com/blog/2026/04/02/introducing-the-agent-governance-toolkit-open-source-runtime-security-for-ai-agents/"}, {"title": "Self-hosting gets easier: OpenAI’s gpt-oss models land in Ollama", "tag": "harmony", "bullets": ["Ollama lists OpenAI ‘gpt-oss’ open-weight models (20B and 120B) under Apache 2.0.", "Claims MXFP4 quantization support and the ability to run the smaller model on ~16GB RAM.", "Good fit for local reasoning + agentic workflows where data can’t leave the box."], "sourceLabel": "Ollama Library", "sourceUrl": "https://ollama.com/library/gpt-oss", "bonus": true}, {"title": "Adobe expands Firefly’s browser video editor + adds Kling 3.0 models", "tag": "bonus", "bullets": ["Firefly Video Editor adds audio cleanup (Enhance Speech) and tighter Adobe Stock integration.", "Adobe says Kling 3.0 and Kling 3.0 Omni are now available as Firefly video models.", "Premiere gets a new Color Mode (beta); After Effects adds an AI Object Matte workflow."], "sourceLabel": "Adobe Blog", "sourceUrl": "https://blog.adobe.com/en/publish/2026/04/15/adobe-extends-leadership-video-unleashing-new-ai-powered-creation-firefly-reinventing-color-editors-in-premiere", "bonus": true}], "stories": [{"title": "Grid edge: AI data centers are forcing utilities to rethink load planning", "tag": "both", "summary": "Utility Dive reports data-center demand volatility is breaking legacy planning assumptions and pushing utilities toward more dynamic forecasting and flexibility programs.", "sourceLabel": "Utility Dive", "sourceUrl": "https://www.utilitydive.com/news/ai-data-centers-utility-load-planning/816806/"}, {"title": "Real estate ops: Entrata debuts an ‘agentic’ property management system with 100+ AI agents", "tag": "groove", "summary": "Entrata says its OXP platform now embeds 100+ AI agents across leasing, maintenance, accounting, and resident workflows, plus an orchestration workspace (OXP Studio).", "sourceLabel": "GlobeNewswire", "sourceUrl": "https://www.globenewswire.com/news-release/2026/03/24/3261761/0/en/entrata-introduces-the-multifamily-industry-s-first-agentic-property-management-system-with-100-embedded-ai-agents.html"}, {"title": "Property managers: DoorLoop launches AI Inspections to turn photos into reports + work orders", "tag": "groove", "summary": "DoorLoop says its AI Inspections feature can generate structured inspection reports from guided photo capture and automatically create follow-up work orders.", "sourceLabel": "DoorLoop Blog", "sourceUrl": "https://www.doorloop.com/blog/doorloop-launches-ai-inspections"}, {"title": "Creators: Google Vids adds free Veo 3.1 video generations for anyone with a Google account", "tag": "bonus", "summary": "Google says Vids now offers 10 free Veo 3.1 generations monthly, with higher limits for AI Ultra/Workspace tiers and music via Lyria for paid plans.", "sourceLabel": "Google Blog", "sourceUrl": "https://blog.google/products-and-platforms/products/workspace/google-vids-updates-lyria-veo/"}, {"title": "Open models: Google releases Gemma 4 under Apache 2.0", "tag": "harmony", "summary": "Google’s open-source team says Gemma 4 is the first Gemma family released under Apache 2.0, aiming to broaden commercial and research use.", "sourceLabel": "Google Open Source Blog", "sourceUrl": "https://opensource.googleblog.com/2026/03/gemma-4-expanding-the-gemmaverse-with-apache-20.html"}, {"title": "Identity for agents: why IAM becomes the control plane for autonomous workflows", "tag": "enterprise", "summary": "Strata argues agentic AI needs runtime identity governance (ephemeral credentials, observability, and delegation controls) rather than periodic access reviews.", "sourceLabel": "Strata Identity", "sourceUrl": "https://www.strata.io/blog/agentic-identity/agentic-ai-governance-how-to-approach-it/"}]}
 ;
-// ────────────────────────────────────────────────────────────────────────────
 
-/* ── Render helpers ─────────────────────────────────────────────────────── */
+/* render-fix v1 — TAG_META + bullets */
 const TAG_META = {
-  groove:     { label: "GrooveGrid",              pillClass: "pill-groove",     cardClass: "spotlight-flux" },
-  harmony:    { label: "HarmonyGrid",             pillClass: "pill-harmony",    cardClass: "spotlight-harmony" },
-  both:       { label: "GrooveGrid + HarmonyGrid",pillClass: "pill-both",       cardClass: "spotlight-both" },
-  enterprise: { label: "Enterprise",              pillClass: "pill-enterprise", cardClass: "spotlight-enterprise" },
-  bonus:      { label: "Bonus",                   pillClass: "pill-bonus",      cardClass: "spotlight-bonus" },
+  groove:     { label: 'GrooveGrid',              pillClass: 'pill-groove',     cardClass: 'spotlight-flux'      },
+  harmony:    { label: 'HarmonyGrid',             pillClass: 'pill-harmony',    cardClass: 'spotlight-harmony'   },
+  both:       { label: 'GrooveGrid + HarmonyGrid',pillClass: 'pill-both',       cardClass: 'spotlight-both'      },
+  enterprise: { label: 'Enterprise',              pillClass: 'pill-enterprise', cardClass: 'spotlight-enterprise'},
+  bonus:      { label: 'Bonus',                   pillClass: 'pill-bonus',      cardClass: 'spotlight-bonus'     }
 };
+
+function escapeHTML(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 function pill(tag) {
   const m = TAG_META[tag] || TAG_META.enterprise;
-  return `<span class="pill ${m.pillClass}">${m.label}</span>`;
+  return `<span class="pill ${m.pillClass}">${escapeHTML(m.label)}</span>`;
 }
 
 function externalIcon() {
@@ -362,63 +375,96 @@ function externalIcon() {
 }
 
 /* ── Date ──────────────────────────────────────────────────────────────── */
-const d = new Date(REPORT.date + "T12:00:00");
-const fmt = d.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-document.getElementById("report-date").textContent = fmt;
+(function () {
+  try {
+    const d = new Date(REPORT.date + 'T12:00:00');
+    const fmt = d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const el = document.getElementById('report-date');
+    if (el) el.textContent = fmt;
+  } catch (e) { /* non-fatal */ }
+})();
 
 /* ── Spotlights ────────────────────────────────────────────────────────── */
-const grid = document.getElementById("spotlight-grid");
-const visibleSpotlights = REPORT.spotlights.filter((s, i) => {
-  if (s.bonus) return true;   // bonus cards always show if present
-  return i < 2;               // cap at 2 non-bonus spotlights
+const spotlightsAll = (REPORT && Array.isArray(REPORT.spotlights)) ? REPORT.spotlights : [];
+const visibleSpotlights = spotlightsAll.filter((s, i) => {
+  if (s && s.bonus) return true;
+  return i < 4;  // safety cap; matches README 'hard cap 4'
 });
 
-if (visibleSpotlights.length === 0) {
-  grid.innerHTML = `<div class="empty">No spotlights for today.</div>`;
-} else {
-  visibleSpotlights.forEach(s => {
-    const m = TAG_META[s.tag] || TAG_META.enterprise;
-    grid.innerHTML += `
-      <div class="card ${m.cardClass}">
-        <div class="card-header">
-          <h2>${s.headline}</h2>
-          ${pill(s.tag)}
-        </div>
-        <p>${s.summary}</p>
-        <div class="card-footer">
-          <span class="relevance">${s.relevance || ""}</span>
-          <a class="source-link" href="${s.sourceUrl}" target="_blank" rel="noopener">
-            ${externalIcon()} ${s.sourceLabel}
-          </a>
-        </div>
-      </div>`;
-  });
+function spotlightCard(s) {
+  const m = TAG_META[s.tag] || TAG_META.enterprise;
+  const heading = escapeHTML(s.title || s.headline || '(untitled)');
+  const bulletsArr = Array.isArray(s.bullets) ? s.bullets : (s.summary ? [s.summary] : []);
+  const bulletsHTML = bulletsArr.length
+    ? `<ul class="bullets">${bulletsArr.map(b => `<li>${escapeHTML(b)}</li>`).join('')}</ul>`
+    : '';
+  const sourceLabel = escapeHTML(s.sourceLabel || 'Source');
+  const sourceUrl   = String(s.sourceUrl || '#');
+  return `
+    <div class="card ${m.cardClass}">
+      <div class="card-header">
+        <h2>${heading}</h2>
+        ${pill(s.tag)}
+      </div>
+      ${bulletsHTML}
+      <div class="card-footer">
+        <span class="relevance">${escapeHTML(s.relevance || '')}</span>
+        <a class="source-link" href="${sourceUrl}" target="_blank" rel="noopener">
+          ${externalIcon()} ${sourceLabel}
+        </a>
+      </div>
+    </div>`;
 }
+
+(function () {
+  const grid = document.getElementById('spotlight-grid');
+  if (!grid) return;
+  if (visibleSpotlights.length === 0) {
+    grid.innerHTML = `<div class="empty">No spotlights for today.</div>`;
+  } else {
+    grid.innerHTML = visibleSpotlights.map(spotlightCard).join('');
+  }
+})();
 
 /* ── Stories ───────────────────────────────────────────────────────────── */
-const list = document.getElementById("story-list");
-if (!REPORT.stories || REPORT.stories.length === 0) {
-  list.innerHTML = `<div class="empty">No additional stories today.</div>`;
-} else {
-  REPORT.stories.forEach(s => {
-    list.innerHTML += `
-      <div class="story-item">
-        <div class="story-pill">${pill(s.tag)}</div>
-        <div class="story-body">
-          <div class="story-title">${s.title}</div>
-          <div class="story-summary">${s.summary}</div>
-        </div>
-        <a class="story-source" href="${s.sourceUrl}" target="_blank" rel="noopener">
-          ${externalIcon()} ${s.sourceLabel}
-        </a>
-      </div>`;
-  });
+function storyRow(s) {
+  const title = escapeHTML(s.title || s.headline || '(untitled)');
+  const summary = escapeHTML(s.summary || '');
+  const sourceLabel = escapeHTML(s.sourceLabel || 'Source');
+  const sourceUrl   = String(s.sourceUrl || '#');
+  const summaryHTML = summary ? `<div class="story-summary">${summary}</div>` : '';
+  return `
+    <div class="story-item">
+      <div class="story-pill">${pill(s.tag)}</div>
+      <div class="story-body">
+        <div class="story-title">${title}</div>
+        ${summaryHTML}
+      </div>
+      <a class="story-source" href="${sourceUrl}" target="_blank" rel="noopener">
+        ${externalIcon()} ${sourceLabel}
+      </a>
+    </div>`;
 }
 
+(function () {
+  const list = document.getElementById('story-list');
+  if (!list) return;
+  const stories = (REPORT && Array.isArray(REPORT.stories)) ? REPORT.stories : [];
+  if (stories.length === 0) {
+    list.innerHTML = `<div class="empty">No additional stories today.</div>`;
+  } else {
+    list.innerHTML = stories.map(storyRow).join('');
+  }
+})();
+
 /* ── Footer count ──────────────────────────────────────────────────────── */
-const total = visibleSpotlights.length + (REPORT.stories?.length || 0);
-document.getElementById("footer-count").textContent =
-  `${visibleSpotlights.length} spotlight${visibleSpotlights.length !== 1 ? "s" : ""} · ${REPORT.stories?.length || 0} stories`;
+(function () {
+  const el = document.getElementById('footer-count');
+  if (!el) return;
+  const s = visibleSpotlights.length;
+  const t = (REPORT && Array.isArray(REPORT.stories)) ? REPORT.stories.length : 0;
+  el.textContent = `${s} spotlight${s !== 1 ? 's' : ''} · ${t} stories`;
+})();
 </script>
 </body>
 </html>

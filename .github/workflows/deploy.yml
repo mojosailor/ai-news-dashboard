@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'html/**'
-      - 'scripts/build_manifest.py'
+      - 'scripts/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -18,6 +18,7 @@ env:
   S3_BUCKET: ai-news-dashboard-992382519644
   ROLE_ARN: arn:aws:iam::992382519644:role/ai-news-dashboard-deploy
   CF_DISTRIBUTION_ID: ${{ secrets.CF_DISTRIBUTION_ID }}
+  LIVE_URLS: "https://news.harmonygrid.ai https://news.groovegrid.ai"
 
 jobs:
   deploy:
@@ -30,13 +31,63 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # ── Pre-deploy guards ─────────────────────────────────────────────
+      # Same checks as validate.yml.  If anything fails here we abort
+      # before touching production.
+      - name: REPORT schema validation
+        run: python scripts/validate_report.py
+
+      - name: HTML markup validation
+        run: npx --yes html-validate@8 "html/**/*.html"
+
       - name: Build archive manifest
         run: python scripts/build_manifest.py
 
+      - name: Install Playwright
+        run: |
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund playwright@1.48
+          npx playwright install --with-deps chromium
+
+      - name: Serve html/ on a local port
+        run: |
+          cd html
+          python -m http.server 8765 --bind 127.0.0.1 > /tmp/http.log 2>&1 &
+          for i in $(seq 1 20); do
+            if curl -sf http://127.0.0.1:8765/index.html > /dev/null; then
+              echo "ready after ${i} attempts"; exit 0
+            fi
+            sleep 0.5
+          done
+          echo "server failed to start"; cat /tmp/http.log; exit 1
+
+      - name: Pre-deploy headless render check
+        run: |
+          set -e
+          urls=("http://127.0.0.1:8765/index.html")
+          for f in html/archive/2026-*.html; do
+            urls+=("http://127.0.0.1:8765/archive/$(basename "$f")")
+          done
+          node scripts/render_check.cjs "${urls[@]}"
+
+      # ── Deploy ────────────────────────────────────────────────────────
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Capture current production index.html as rollback candidate
+        run: |
+          # Snapshot what production currently serves so we can roll back
+          # to *exactly* that bytes-for-bytes if the new deploy turns out
+          # to be blank.  Non-fatal if missing (first deploy).
+          aws s3 cp "s3://$S3_BUCKET/index.html" /tmp/previous-index.html || true
+          ls -la /tmp/previous-index.html || echo "no prior index"
 
       - name: Sync to S3
         run: aws s3 sync html/ s3://$S3_BUCKET/ --delete
@@ -45,4 +96,45 @@ jobs:
         run: |
           aws cloudfront create-invalidation \
             --distribution-id "$CF_DISTRIBUTION_ID" \
-            --paths "/*"
+            --paths "/*" > /tmp/invalidation.json
+          INV_ID=$(python -c "import json; print(json.load(open('/tmp/invalidation.json'))['Invalidation']['Id'])")
+          echo "Waiting for invalidation $INV_ID to complete (so smoke test sees fresh content)..."
+          aws cloudfront wait invalidation-completed \
+            --distribution-id "$CF_DISTRIBUTION_ID" \
+            --id "$INV_ID"
+
+      # ── Post-deploy smoke test ────────────────────────────────────────
+      - name: Live render smoke test (news.harmonygrid.ai + news.groovegrid.ai)
+        id: smoke
+        continue-on-error: true
+        run: node scripts/render_check.cjs $LIVE_URLS
+
+      # ── Auto-rollback on smoke failure ────────────────────────────────
+      - name: Roll back to previous index on smoke failure
+        if: steps.smoke.outcome == 'failure'
+        run: |
+          set -e
+          if [ -s /tmp/previous-index.html ]; then
+            echo "Rolling back: restoring previous index.html to S3"
+            aws s3 cp /tmp/previous-index.html "s3://$S3_BUCKET/index.html" \
+              --content-type "text/html; charset=utf-8"
+          else
+            echo "No prior index to roll back to; falling back to most recent archive"
+            LATEST=$(ls -1 html/archive/2026-*.html | sort | tail -1)
+            if [ -n "$LATEST" ]; then
+              aws s3 cp "$LATEST" "s3://$S3_BUCKET/index.html" \
+                --content-type "text/html; charset=utf-8"
+            else
+              echo "Nothing to roll back to."; exit 1
+            fi
+          fi
+          aws cloudfront create-invalidation \
+            --distribution-id "$CF_DISTRIBUTION_ID" \
+            --paths "/index.html" "/" > /dev/null
+          echo "Rollback complete."
+
+      - name: Fail the run if smoke test failed (so notifications fire)
+        if: steps.smoke.outcome == 'failure'
+        run: |
+          echo "::error::Post-deploy smoke test failed; production was rolled back."
+          exit 1

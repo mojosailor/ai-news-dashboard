@@ -298,6 +298,22 @@
     flex-wrap: wrap;
     gap: 8px;
   }
+
+  /* render-fix v1 bullets css */
+  .card .bullets {
+    list-style: disc;
+    padding-left: 18px;
+    margin: 0;
+    color: #b0b4cc;
+    font-size: 13px;
+    line-height: 1.65;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card .bullets li {
+    margin-left: 0;
+  }
 </style>
 </head>
 <body>
@@ -343,17 +359,6 @@
      DATA — edit this object to update the report
      ════════════════════════════════════════════ -->
 <script>
-/*
-  TAG values:
-    "groove"      → [GrooveGrid]
-    "harmony"     → [HarmonyGrid]
-    "both"        → [GrooveGrid + HarmonyGrid]
-    "enterprise"  → General Enterprise
-    "bonus"       → Bonus (rare 3rd spotlight, big-news days only)
-
-  Set bonus:true on a spotlight to show it as the optional 3rd card.
-  If bonus:true but you only want 2, simply remove the entry.
-*/
 const REPORT = {
   date: "2026-04-26",
 
@@ -439,20 +444,28 @@ const REPORT = {
     },
   ],
 };
-// ────────────────────────────────────────────────────────────────────────────
 
-/* ── Render helpers ─────────────────────────────────────────────────────── */
+/* render-fix v1 — TAG_META + bullets */
 const TAG_META = {
-  groove:     { label: "GrooveGrid",              pillClass: "pill-groove",     cardClass: "spotlight-flux" },
-  harmony:    { label: "HarmonyGrid",             pillClass: "pill-harmony",    cardClass: "spotlight-harmony" },
-  both:       { label: "GrooveGrid + HarmonyGrid",pillClass: "pill-both",       cardClass: "spotlight-both" },
-  enterprise: { label: "Enterprise",              pillClass: "pill-enterprise", cardClass: "spotlight-enterprise" },
-  bonus:      { label: "Bonus",                   pillClass: "pill-bonus",      cardClass: "spotlight-bonus" },
+  groove:     { label: 'GrooveGrid',              pillClass: 'pill-groove',     cardClass: 'spotlight-flux'      },
+  harmony:    { label: 'HarmonyGrid',             pillClass: 'pill-harmony',    cardClass: 'spotlight-harmony'   },
+  both:       { label: 'GrooveGrid + HarmonyGrid',pillClass: 'pill-both',       cardClass: 'spotlight-both'      },
+  enterprise: { label: 'Enterprise',              pillClass: 'pill-enterprise', cardClass: 'spotlight-enterprise'},
+  bonus:      { label: 'Bonus',                   pillClass: 'pill-bonus',      cardClass: 'spotlight-bonus'     }
 };
+
+function escapeHTML(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 function pill(tag) {
   const m = TAG_META[tag] || TAG_META.enterprise;
-  return `<span class="pill ${m.pillClass}">${m.label}</span>`;
+  return `<span class="pill ${m.pillClass}">${escapeHTML(m.label)}</span>`;
 }
 
 function externalIcon() {
@@ -460,63 +473,96 @@ function externalIcon() {
 }
 
 /* ── Date ──────────────────────────────────────────────────────────────── */
-const d = new Date(REPORT.date + "T12:00:00");
-const fmt = d.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-document.getElementById("report-date").textContent = fmt;
+(function () {
+  try {
+    const d = new Date(REPORT.date + 'T12:00:00');
+    const fmt = d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const el = document.getElementById('report-date');
+    if (el) el.textContent = fmt;
+  } catch (e) { /* non-fatal */ }
+})();
 
 /* ── Spotlights ────────────────────────────────────────────────────────── */
-const grid = document.getElementById("spotlight-grid");
-const visibleSpotlights = REPORT.spotlights.filter((s, i) => {
-  if (s.bonus) return true;   // bonus cards always show if present
-  return i < 2;               // cap at 2 non-bonus spotlights
+const spotlightsAll = (REPORT && Array.isArray(REPORT.spotlights)) ? REPORT.spotlights : [];
+const visibleSpotlights = spotlightsAll.filter((s, i) => {
+  if (s && s.bonus) return true;
+  return i < 4;  // safety cap; matches README 'hard cap 4'
 });
 
-if (visibleSpotlights.length === 0) {
-  grid.innerHTML = `<div class="empty">No spotlights for today.</div>`;
-} else {
-  visibleSpotlights.forEach(s => {
-    const m = TAG_META[s.tag] || TAG_META.enterprise;
-    grid.innerHTML += `
-      <div class="card ${m.cardClass}">
-        <div class="card-header">
-          <h2>${s.headline}</h2>
-          ${pill(s.tag)}
-        </div>
-        <p>${s.summary}</p>
-        <div class="card-footer">
-          <span class="relevance">${s.relevance || ""}</span>
-          <a class="source-link" href="${s.sourceUrl}" target="_blank" rel="noopener">
-            ${externalIcon()} ${s.sourceLabel}
-          </a>
-        </div>
-      </div>`;
-  });
+function spotlightCard(s) {
+  const m = TAG_META[s.tag] || TAG_META.enterprise;
+  const heading = escapeHTML(s.title || s.headline || '(untitled)');
+  const bulletsArr = Array.isArray(s.bullets) ? s.bullets : (s.summary ? [s.summary] : []);
+  const bulletsHTML = bulletsArr.length
+    ? `<ul class="bullets">${bulletsArr.map(b => `<li>${escapeHTML(b)}</li>`).join('')}</ul>`
+    : '';
+  const sourceLabel = escapeHTML(s.sourceLabel || 'Source');
+  const sourceUrl   = String(s.sourceUrl || '#');
+  return `
+    <div class="card ${m.cardClass}">
+      <div class="card-header">
+        <h2>${heading}</h2>
+        ${pill(s.tag)}
+      </div>
+      ${bulletsHTML}
+      <div class="card-footer">
+        <span class="relevance">${escapeHTML(s.relevance || '')}</span>
+        <a class="source-link" href="${sourceUrl}" target="_blank" rel="noopener">
+          ${externalIcon()} ${sourceLabel}
+        </a>
+      </div>
+    </div>`;
 }
+
+(function () {
+  const grid = document.getElementById('spotlight-grid');
+  if (!grid) return;
+  if (visibleSpotlights.length === 0) {
+    grid.innerHTML = `<div class="empty">No spotlights for today.</div>`;
+  } else {
+    grid.innerHTML = visibleSpotlights.map(spotlightCard).join('');
+  }
+})();
 
 /* ── Stories ───────────────────────────────────────────────────────────── */
-const list = document.getElementById("story-list");
-if (!REPORT.stories || REPORT.stories.length === 0) {
-  list.innerHTML = `<div class="empty">No additional stories today.</div>`;
-} else {
-  REPORT.stories.forEach(s => {
-    list.innerHTML += `
-      <div class="story-item">
-        <div class="story-pill">${pill(s.tag)}</div>
-        <div class="story-body">
-          <div class="story-title">${s.title}</div>
-          <div class="story-summary">${s.summary}</div>
-        </div>
-        <a class="story-source" href="${s.sourceUrl}" target="_blank" rel="noopener">
-          ${externalIcon()} ${s.sourceLabel}
-        </a>
-      </div>`;
-  });
+function storyRow(s) {
+  const title = escapeHTML(s.title || s.headline || '(untitled)');
+  const summary = escapeHTML(s.summary || '');
+  const sourceLabel = escapeHTML(s.sourceLabel || 'Source');
+  const sourceUrl   = String(s.sourceUrl || '#');
+  const summaryHTML = summary ? `<div class="story-summary">${summary}</div>` : '';
+  return `
+    <div class="story-item">
+      <div class="story-pill">${pill(s.tag)}</div>
+      <div class="story-body">
+        <div class="story-title">${title}</div>
+        ${summaryHTML}
+      </div>
+      <a class="story-source" href="${sourceUrl}" target="_blank" rel="noopener">
+        ${externalIcon()} ${sourceLabel}
+      </a>
+    </div>`;
 }
 
+(function () {
+  const list = document.getElementById('story-list');
+  if (!list) return;
+  const stories = (REPORT && Array.isArray(REPORT.stories)) ? REPORT.stories : [];
+  if (stories.length === 0) {
+    list.innerHTML = `<div class="empty">No additional stories today.</div>`;
+  } else {
+    list.innerHTML = stories.map(storyRow).join('');
+  }
+})();
+
 /* ── Footer count ──────────────────────────────────────────────────────── */
-const total = visibleSpotlights.length + (REPORT.stories?.length || 0);
-document.getElementById("footer-count").textContent =
-  `${visibleSpotlights.length} spotlight${visibleSpotlights.length !== 1 ? "s" : ""} · ${REPORT.stories?.length || 0} stories`;
+(function () {
+  const el = document.getElementById('footer-count');
+  if (!el) return;
+  const s = visibleSpotlights.length;
+  const t = (REPORT && Array.isArray(REPORT.stories)) ? REPORT.stories.length : 0;
+  el.textContent = `${s} spotlight${s !== 1 ? 's' : ''} · ${t} stories`;
+})();
 </script>
 </body>
 </html>

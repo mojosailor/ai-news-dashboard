@@ -133,6 +133,9 @@ def _collect_keywords(report: dict) -> list[str]:
             v = s.get(k)
             if v:
                 bits.append(str(v))
+        for b in s.get("bullets") or []:
+            if b:
+                bits.append(str(b))
     for s in report.get("stories") or []:
         for k in ("title", "summary", "sourceLabel", "tag"):
             v = s.get(k)
@@ -145,10 +148,15 @@ def summarize_entry(date: str, report: dict) -> dict:
     spotlights = report.get("spotlights") or []
     stories = report.get("stories") or []
 
-    # Lead title/summary = first spotlight (uses 'headline'), else first story (uses 'title')
+    # Lead title/summary = first spotlight (uses 'title' or legacy 'headline'),
+    # else first story.  Summary falls back to first bullet for the new shape.
     lead = (spotlights[0] if spotlights else (stories[0] if stories else {})) or {}
-    title = lead.get("headline") or lead.get("title") or f"Daily AI Intel — {date}"
+    title = lead.get("title") or lead.get("headline") or f"Daily AI Intel — {date}"
     summary = lead.get("summary") or ""
+    if not summary:
+        bullets = lead.get("bullets") or []
+        if bullets and isinstance(bullets[0], str):
+            summary = bullets[0]
 
     # Unique tags across the report
     tags = []
