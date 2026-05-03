@@ -98,10 +98,12 @@ jobs:
             --distribution-id "$CF_DISTRIBUTION_ID" \
             --paths "/*" > /tmp/invalidation.json
           INV_ID=$(python -c "import json; print(json.load(open('/tmp/invalidation.json'))['Invalidation']['Id'])")
-          echo "Waiting for invalidation $INV_ID to complete (so smoke test sees fresh content)..."
-          aws cloudfront wait invalidation-completed \
-            --distribution-id "$CF_DISTRIBUTION_ID" \
-            --id "$INV_ID"
+          echo "Created invalidation $INV_ID"
+          # The deploy role intentionally has create-invalidation but not
+          # get-invalidation, so we cannot use 'aws cloudfront wait'.
+          # 90s is comfortably above CloudFront's typical propagation time.
+          echo "Sleeping 90s for invalidation to propagate before smoke test..."
+          sleep 90
 
       # ── Post-deploy smoke test ────────────────────────────────────────
       - name: Live render smoke test (news.harmonygrid.ai + news.groovegrid.ai)
