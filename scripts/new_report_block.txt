@@ -1,0 +1,89 @@
+const REPORT = {
+  date: "2026-05-06",
+  spotlights: [
+    {
+      title: "Microsoft Agent 365 ships Entra ID Governance for agents (access packages + sponsor lifecycle)",
+      tag: "enterprise",
+      bullets: [
+        "Brings agent identities into the same governance model as people, so permissions stay intentional as agents evolve.",
+        "Uses access packages to scope what an agent can reach, plus sponsor-driven lifecycle workflows to keep a human accountable.",
+        "Pilot next: define a standard access package per agent class (support, finance, IT ops) and attach it at agent creation time."
+      ],
+      sourceLabel: "Microsoft Tech Community",
+      sourceUrl: "https://techcommunity.microsoft.com/blog/agent-365-blog/what%E2%80%99s-new-in-agent-365-may-2026/4516340"
+    },
+    {
+      title: "Proptech shifts from document checks to direct-source verification as AI-generated rental fraud rises",
+      tag: "groove",
+      bullets: [
+        "Rental and mortgage operators report AI is making fake IDs, pay stubs, and bank statements cheaper to produce and harder to detect.",
+        "The response trend: move from uploaded-document review toward direct-source payroll/banking data and automated integrity checks.",
+        "Pilot next: add a second-path verification flow for any application with mismatched identity/income signals (velocity without blind trust)."
+      ],
+      sourceLabel: "Commercial Observer",
+      sourceUrl: "https://commercialobserver.com/2026/05/proptech-mortgage-fraud-rental-fraud/"
+    },
+    {
+      title: "Open-source runtime security: Microsoft’s Agent Governance Toolkit targets OWASP agentic AI risks",
+      tag: "bonus",
+      bonus: true,
+      bullets: [
+        "MIT-licensed toolkit pitches sub-millisecond policy enforcement and coverage for the OWASP Agentic AI Top 10.",
+        "Includes policy-as-code (YAML/OPA Rego/Cedar), plugin signing, and adapters for popular agent frameworks.",
+        "Use it as a reference architecture for policy interception, tool-call gating, and supply-chain controls in agent runtimes."
+      ],
+      sourceLabel: "Microsoft Open Source Blog",
+      sourceUrl: "https://opensource.microsoft.com/blog/2026/04/02/introducing-the-agent-governance-toolkit-open-source-runtime-security-for-ai-agents/"
+    },
+    {
+      title: "Adobe Firefly upgrades video editing with in-editor Enhance Speech and adds Kling 3.0 models",
+      tag: "bonus",
+      bonus: true,
+      bullets: [
+        "Firefly Video Editor adds audio cleanup (Enhance Speech, noise/reverb control) directly in the browser workflow.",
+        "Adobe highlights adding Kling 3.0 and Kling 3.0 Omni models alongside other third-party models.",
+        "Good fit for teams producing weekly promos: fast rough-cuts + dialogue cleanup without round-tripping audio tools."
+      ],
+      sourceLabel: "Adobe Blog",
+      sourceUrl: "https://blog.adobe.com/en/publish/2026/04/15/adobe-extends-leadership-video-unleashing-new-ai-powered-creation-firefly-reinventing-color-editors-in-premiere"
+    }
+  ],
+  stories: [
+    {
+      title: "Microsoft Entra announces RSAC 2026 push for Agent ID as the identity foundation for Agent 365",
+      tag: "enterprise",
+      sourceLabel: "Microsoft Tech Community",
+      sourceUrl: "https://techcommunity.microsoft.com/blog/microsoft-entra-blog/microsoft-entra-innovations-announced-at-rsac-2026/4502146"
+    },
+    {
+      title: "Okta outlines “secure agentic enterprise” blueprint and Okta for AI Agents (discover, govern, revoke)",
+      tag: "enterprise",
+      sourceLabel: "Okta Newsroom",
+      sourceUrl: "https://www.okta.com/newsroom/press-releases/showcase-2026/"
+    },
+    {
+      title: "PNNL explores how connected lighting systems can process OpenADR 2.0b signals via certified tools + Python",
+      tag: "both",
+      sourceLabel: "U.S. Department of Energy",
+      sourceUrl: "https://www.energy.gov/cmei/ssl/exploring-reaction-cls-openadr-20b-signals"
+    },
+    {
+      title: "Captions adds inline translate/transcribe/dub plus SRT export and per-shot eye contact tools",
+      tag: "bonus",
+      sourceLabel: "Captions Help Center",
+      sourceUrl: "https://captions.ai/help/whats-new"
+    },
+    {
+      title: "Bisnow reports AI is making rental application fraud harder to spot for apartment owners",
+      tag: "groove",
+      sourceLabel: "Bisnow",
+      sourceUrl: "https://www.bisnow.com/national/news/multifamily/ai-rent-fraud-apartment-renters-landlords-pay-price-134391"
+    },
+    {
+      title: "DOE highlights grid-edge interoperability work sending OpenADR signals to endpoints using certified commercial software",
+      tag: "harmony",
+      sourceLabel: "U.S. Department of Energy",
+      sourceUrl: "https://www.energy.gov/cmei/ssl/cls-potential-grid-services"
+    }
+  ]
+};
