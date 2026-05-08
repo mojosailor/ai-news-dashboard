@@ -100,7 +100,25 @@
     border-color: var(--both-border);
     background: var(--both-bg);
   }
-  #report-date {
+
+    .archive-banner {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      font-size: 14px;
+      color: #cfd3da;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .archive-banner a {
+      color: #9ad0ff;
+      text-decoration: none;
+    }
+    .archive-banner a:hover {
+      text-decoration: underline;
+    }
+
+    #report-date {
     font-size: 13px;
     color: var(--muted);
   }
@@ -320,6 +338,10 @@
     <div id="report-date">2026-05-05</div>
   </div>
 </header>
+    <div class="archive-banner">
+      You're viewing an archived edition. <a href="../">Go to Latest</a> or <a href="index.html">browse the Archive</a>.
+    </div>
+
 
 <!-- ── Spotlight section ──────────────────────── -->
 <div class="section-label" style="max-width:1100px;margin:0 auto 12px;">Spotlights</div>
